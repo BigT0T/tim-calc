@@ -1,12 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>empty</title>
+    <title>fami tour calc by Tim</title>
+    <style>
+      html,
+      body {
+        padding: 5vh 10vw;
+        margin: 0;
+        font-size: 24px;
+      }
+
+      #calc {
+        display: flex;
+        gap: 24px;
+      }
+
+      #calc > div {
+        flex: 1;
+        margin: 0;
+      }
+
+      button {
+        height: 56px;
+        font-size: 24px;
+      }
+
+      input[type='text'],
+      input[type='number'] {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+
+        border: 1px solid #ccc;
+        padding: 2px;
+      }
+
+      input[type='radio'] {
+        width: 30px;
+        height: 30px;
+      }
+
+      label {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+      }
+
+      div + div {
+        margin-top: 24px;
+      }
+    </style>
   </head>
   <body>
-   t s nh,8
+    <div id="calc"></div>
+    <div style="display: flex; align-items: center; gap: 5px">
+      adjustment: +<input type="text" id="total" value="0" /> x<input type="text" id="final" value="0" />
+      <button onclick="setRes()">Calc</button>
+    </div>
+    <div id="res"></div>
+    <script>
+      const calc = document.querySelector('#calc');
+      const res = document.querySelector('#res');
+      const total = document.querySelector('#total');
+      const final = document.querySelector('#final');
+      const setRes = () => {
+        res.innerHTML = '';
+        let resT = 0;
+        let resStrT = '';
+        let resF = 0;
+        let resStrF = '';
+
+        [1, 2, 3].forEach((no) => {
+          const cond = document.querySelector('input[name="trigger-' + no + '"]:checked')?.value || '';
+          const condNo = +(document.querySelector('#trigger-' + no + '-no')?.value || '');
+          const condVal = +(document.querySelector('input[name="trigger-' + condNo + '-dice"]:checked')?.value || '');
+          const dice = +(document.querySelector('input[name="trigger-' + no + '-dice"]:checked')?.value || '');
+          const to = +(document.querySelector('#trigger-' + no + '-total')?.value || '');
+          const fi = +(document.querySelector('#trigger-' + no + '-final')?.value || '');
+
+          resT += dice;
+          resStrT += ' + ' + dice;
+          if (cond === 'always' || (cond === 'odd' && condVal % 2 === 1) || (cond === 'even' && condVal % 2 === 0)) {
+            resT += to;
+            resF += fi;
+            resStrT += ' + ' + to;
+            resStrF += ' + ' + fi;
+            res.innerHTML += `${no}:${cond}, dice:${dice},+${to},x${fi}<br>`;
+          } else {
+            res.innerHTML += `${no}:${cond}, dice:${dice}<br>`;
+          }
+        });
+
+        resT += +(total.value || '');
+        resF += +(final.value || '');
+
+        res.innerHTML += `( ${resStrT} + ${total.value || ''} ) x ( ${resStrF} + ${final.value || ''} )<br>`;
+        res.innerHTML += `result:${Math.floor(resT * Math.max(resF, 1))}`;
+      };
+      [1, 2, 3].forEach((no) => {
+        const r = document.createDocumentFragment();
+        const d = document.createElement('div');
+
+        const to = document.createElement('input');
+        to.setAttribute('id', 'trigger-' + no + '-total');
+        to.setAttribute('type', 'text');
+        const fi = document.createElement('input');
+        fi.setAttribute('id', 'trigger-' + no + '-final');
+        fi.setAttribute('type', 'text');
+        d.append(' + ');
+        d.appendChild(to);
+        d.append(' x ');
+        d.appendChild(fi);
+        d.appendChild(document.createElement('br'));
+
+        ['always', 'odd', 'even'].forEach((t) => {
+          const label = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.setAttribute('type', 'radio');
+          radio.setAttribute('name', 'trigger-' + no);
+          radio.setAttribute('value', t);
+          radio.addEventListener('change', setRes);
+          label.appendChild(radio);
+          label.append(t);
+          d.appendChild(label);
+        });
+        const n = document.createElement('input');
+        n.setAttribute('id', 'trigger-' + no + '-no');
+        n.setAttribute('value', 2);
+        n.setAttribute('type', 'number');
+        d.appendChild(n);
+        d.appendChild(document.createElement('hr'));
+
+        [1, 2, 3, 4, 5, 6].forEach((dice) => {
+          const label = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.setAttribute('type', 'radio');
+          radio.setAttribute('name', 'trigger-' + no + '-dice');
+          radio.setAttribute('value', dice);
+          radio.addEventListener('change', setRes);
+          label.appendChild(radio);
+          label.append(dice);
+          d.appendChild(label);
+        });
+
+        r.appendChild(d);
+        calc.append(r);
+      });
+    </script>
   </body>
 </html>
