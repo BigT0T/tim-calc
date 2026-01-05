@@ -51,9 +51,23 @@
       div + div {
         margin-top: 24px;
       }
+
+      details {
+        margin-bottom: 24px;
+      }
     </style>
   </head>
   <body>
+    <details id="setpanel">
+      <summary>Set Preset</summary>
+      Preset No:<input value="1" id="setpresetNo" /><br />
+      format: to,fi,ty,cn;ty:always=1,odd=2,even=3<br />
+      Card 1: <input id="setpresetCard1" value="-1,1.4,2,1" /><br />
+      Card 2: <input id="setpresetCard2" value="1,1.4,2,1" /><br />
+      Card 3: <input id="setpresetCard3" value="1,1.4,2,1" /><br />
+      <input type="button" onclick="setupPreset()" value="Set Up" />
+      <input type="button" onclick="clearPreset()" value="Clear" />
+    </details>
     <div>
       <button onclick="preset(1)">Preset 1</button>
       <button onclick="preset(2)">Preset 2</button>
@@ -67,6 +81,8 @@
     <div id="res"></div>
     <script>
       const calc = document.querySelector('#calc');
+      const setpanel = document.querySelector('#setpanel');
+      const setpresetNo = document.querySelector('#setpresetNo');
       const res = document.querySelector('#res');
       const total = document.querySelector('#total');
       const final = document.querySelector('#final');
@@ -157,31 +173,38 @@
 
       const preset = (setNo) => {
         const set = JSON.parse(localStorage.getItem('preset' + setNo) || '[]');
+        setpresetNo.value = setNo;
         if (set.length) {
+          res.innerHTML = 'clean result after switch preset';
           set.forEach((s, n) => {
             const no = n + 1;
             const { to, fi, ty, cn } = s;
-            if (to) {
-              document.querySelector('#trigger-' + no + '-total').value = to;
-            }
-            if (fi) {
-              document.querySelector('#trigger-' + no + '-final').value = fi;
-            }
-            if (ty) {
-              document.querySelectorAll('input[name="trigger-' + no + '"]')[ty - 1].checked = true;
-            }
-            if (cn) {
-              document.querySelector('#trigger-' + no + '-no').value = cn;
-            }
+            document.querySelector('#trigger-' + no + '-total').value = to || '';
+            document.querySelector('#trigger-' + no + '-final').value = fi || '';
+            document.querySelectorAll('input[name="trigger-' + no + '"]')[ty - 1].checked = true;
+            document.querySelector('#trigger-' + no + '-no').value = cn || '';
+            document.querySelector('#setpresetCard' + no).value = [to, fi, ty, cn].join(',');
           });
         } else {
-          console.log(
-            'localStorage.setItem("preset' +
-              setNo +
-              '",`[{"to":3,"fi":1.4,"ty":2,"cn":1},{"to":7,"ty":1},{"fi":1.6,"ty":3,"cn":3}]`)',
-            'ty1-al,ty2-odd,ty3-even',
-          );
+          setpanel.open = true;
+          res.innerHTML = `input preset${setNo} on above panel`;
         }
+      };
+
+      const setupPreset = () => {
+        const setNo = setpresetNo.value;
+        const getCard = (cardNo) => {
+          const [to, fi, ty, cn] = document.querySelector('#setpresetCard' + cardNo).value.split(',');
+          return { to, fi, ty, cn };
+        };
+        localStorage.setItem('preset' + setNo, JSON.stringify([getCard(1), getCard(2), getCard(3)]));
+        res.innerHTML = `set up preset${setNo} success`;
+      };
+
+      const clearPreset = () => {
+        const setNo = setpresetNo.value;
+        localStorage.removeItem('preset' + setNo);
+        res.innerHTML = `clear preset${setNo} success`;
       };
     </script>
   </body>
