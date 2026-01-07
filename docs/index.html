@@ -54,28 +54,40 @@
 
       details {
         margin-bottom: 24px;
+        zoom: 0.75;
       }
     </style>
   </head>
   <body>
     <details id="setpanel">
       <summary>Set Preset</summary>
-      Preset No:<input value="1" id="setpresetNo" /><br />
-      format: to,fi,ty,cn;ty:always=1,odd=2,even=3<br />
-      Card 1: <input id="setpresetCard1" value="-1,1.4,2,1" /><br />
-      Card 2: <input id="setpresetCard2" value="1,1.4,2,1" /><br />
-      Card 3: <input id="setpresetCard3" value="1,1.4,2,1" /><br />
-      <input type="button" onclick="setupPreset()" value="Set Up" />
-      <input type="button" onclick="clearPreset()" value="Clear" />
+      Preset No:<input type="text" value="1" id="setpresetNo" />
+      <hr />
+      ty:always=1,odd=2,even=3
+      <hr />
+      Card 1: + <input type="text" id="setpresetCard1-to" /> x <input type="text" id="setpresetCard1-fi" /> ty
+      <input type="number" id="setpresetCard1-ty" value="1" /> cn <input type="number" id="setpresetCard1-cn" />
+      <hr />
+      Card 2: + <input type="text" id="setpresetCard2-to" /> x <input type="text" id="setpresetCard2-fi" /> ty
+      <input type="number" id="setpresetCard2-ty" value="1" /> cn <input type="number" id="setpresetCard2-cn" />
+      <hr />
+      Card 3: + <input type="text" id="setpresetCard3-to" /> x <input type="text" id="setpresetCard3-fi" /> ty
+      <input type="number" id="setpresetCard3-ty" value="1" /> cn <input type="number" id="setpresetCard3-cn" />
+      <hr />
+      <button onclick="setupPreset()">Set Up</button>
+      <button onclick="clearPreset()">Clear</button>
     </details>
     <div>
-      <button onclick="preset(1)">Preset 1</button>
-      <button onclick="preset(2)">Preset 2</button>
-      <button onclick="preset(3)">Preset 3</button>
+      <button onclick="loadPreset(1)">Preset 1</button>
+      <button onclick="loadPreset(2)">Preset 2</button>
+      <button onclick="loadPreset(3)">Preset 3</button>
+      <button onclick="booooom()" style="background-color: rgba(255, 47, 47, 0.778); color: rgba(255, 255, 35, 0.842)">
+        Booooooom
+      </button>
     </div>
     <div id="calc"></div>
     <div style="display: flex; align-items: center; gap: 5px">
-      adjustment: +<input type="text" id="total" value="0" /> x<input type="text" id="final" value="0" />
+      Adjustment: +<input type="text" id="total" value="0" /> x<input type="text" id="final" value="0" />
       <button onclick="setRes()">Calc</button>
     </div>
     <div id="res"></div>
@@ -171,7 +183,8 @@
         calc.append(r);
       });
 
-      const preset = (setNo) => {
+      const loadPreset = (setNo) => {
+        clearTextInput();
         const set = JSON.parse(localStorage.getItem('preset' + setNo) || '[]');
         setpresetNo.value = setNo;
         if (set.length) {
@@ -183,7 +196,6 @@
             document.querySelector('#trigger-' + no + '-final').value = fi || '';
             document.querySelectorAll('input[name="trigger-' + no + '"]')[ty - 1].checked = true;
             document.querySelector('#trigger-' + no + '-no').value = cn || '';
-            document.querySelector('#setpresetCard' + no).value = [to, fi, ty, cn].join(',');
           });
         } else {
           setpanel.open = true;
@@ -192,19 +204,46 @@
       };
 
       const setupPreset = () => {
-        const setNo = setpresetNo.value;
-        const getCard = (cardNo) => {
-          const [to, fi, ty, cn] = document.querySelector('#setpresetCard' + cardNo).value.split(',');
-          return { to, fi, ty, cn };
-        };
-        localStorage.setItem('preset' + setNo, JSON.stringify([getCard(1), getCard(2), getCard(3)]));
-        res.innerHTML = `set up preset${setNo} success`;
+        try {
+          const setNo = setpresetNo.value;
+          const getCard = (cardNo) => {
+            const [to, fi, ty, cn] = ['to', 'fi', 'ty', 'cn'].map((k) => {
+              return document.querySelector(`#setpresetCard${cardNo}-${k}`)?.value;
+            });
+
+            if (!to && !fi) {
+              throw `Are you sure in line Card${cardNo}, there is no total & final???`;
+            }
+
+            if (ty != 1 && !cn) {
+              throw `Are you sure in line Card${cardNo}, the "ty" is right???`;
+            }
+
+            return { to, fi, ty, cn };
+          };
+          localStorage.setItem('preset' + setNo, JSON.stringify([getCard(1), getCard(2), getCard(3)]));
+          res.innerHTML = `set up preset${setNo} success`;
+        } catch (error) {
+          res.innerHTML = `<span style='color:red'>${error}</span>`;
+        }
       };
 
       const clearPreset = () => {
         const setNo = setpresetNo.value;
         localStorage.removeItem('preset' + setNo);
+        clearTextInput();
         res.innerHTML = `clear preset${setNo} success`;
+      };
+
+      const clearTextInput = () => {
+        document.querySelectorAll('body>div input[type="text"]')?.forEach((i) => (i.value = ''));
+      };
+
+      const booooom = () => {
+        clearTextInput();
+        setpanel.open = false;
+        localStorage.clear();
+        res.innerHTML = `<p style='background-color: rgba(255, 47, 47, 0.778); color: rgba(255, 255, 35, 0.842);padding: 24px;border-radius: 20px;text-align: center;'>BOOOOOOOM...... ALL CLEAR! YOU ARE SAFE NOW!</p>`;
       };
     </script>
   </body>
