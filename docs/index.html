@@ -65,7 +65,7 @@
     </style>
   </head>
   <body>
-    <details open>
+    <details open id="waveDetail">
       <summary>fami wave</summary>
       <details id="setpanel">
         <summary>Set Preset</summary>
@@ -124,7 +124,8 @@
       </div>
       <div id="res"></div>
     </details>
-    <details>
+    <hr />
+    <details id="eggDetail">
       <summary>
         egg tracker
         <button style="zoom: 0.75" onclick="saveTracker()">save tracker</button>
@@ -180,7 +181,7 @@
         resF += +(final.value || '');
 
         res.innerHTML += `( ${resStrT} + ${total.value || ''} ) x ( ${resStrF} + ${final.value || ''} )<br>`;
-        res.innerHTML += `result:${Math.floor(resT * Math.max(resF, 1))}`;
+        res.innerHTML += `result:<b style="color:green;font-size:30px;">${Math.floor(resT * Math.max(resF, 1))}</b>`;
       };
 
       [1, 2, 3].forEach(no => {
@@ -289,7 +290,7 @@
       };
 
       const clearTextInput = () => {
-        document.querySelectorAll('body>div input[type="text"]')?.forEach(i => (i.value = ''));
+        document.querySelectorAll('#waveDetail input[type="text"]')?.forEach(i => (i.value = ''));
       };
 
       const booooom = () => {
@@ -313,6 +314,7 @@
             { job: 'Drk' },
             { job: 'Hayato' },
             { job: 'MarksMan' },
+            { job: 'Thunder Breaker' },
             { job: 'Bucc' },
           ];
         }
