@@ -321,13 +321,13 @@
         tracker.forEach(t => {
           const d = document.createElement('div');
           d.classList.add('tracker-line');
-          d.append(t.job);
+          //d.append(t.job);
           const l1 = document.createElement('label');
           const c1 = document.createElement('input');
           c1.setAttribute('type', 'checkbox');
           c1.checked = !!t.egg;
           c1.setAttribute('value', t.job);
-          l1.append('egg');
+          l1.append(t.job + '(egg)');
           l1.appendChild(c1);
           d.appendChild(l1);
 
@@ -338,7 +338,7 @@
 
           l2.append('flag');
           l2.appendChild(c2);
-          d.appendChild(l2);
+          //d.appendChild(l2);
 
           egg.appendChild(d);
         });
