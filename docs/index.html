@@ -308,14 +308,19 @@
           tracker = JSON.parse(tracker);
         } else {
           tracker = [
-            { job: 'BowMaster' },
+            { job: 'Bow Master' },
             { job: 'Shade' },
+            { job: 'Wild Hunter' },
             { job: 'Aran' },
-            { job: 'Drk' },
-            { job: 'Hayato' },
+            { job: 'Mo Xuan' },
+            { job: 'Dark Knight' },
+            { job: 'Buccaneer' },
             { job: 'MarksMan' },
             { job: 'Thunder Breaker' },
-            { job: 'Bucc' },
+            { job: 'Hayato' },
+            { job: 'Lynn' },
+            { job: 'Wind Archer' },
+            { job: 'Night Lord' },
           ];
         }
         tracker.forEach(t => {
@@ -331,15 +336,6 @@
           l1.appendChild(c1);
           d.appendChild(l1);
 
-          const l2 = document.createElement('label');
-          const c2 = document.createElement('input');
-          c2.setAttribute('type', 'checkbox');
-          c2.checked = !!t.flag;
-
-          l2.append('flag');
-          l2.appendChild(c2);
-          //d.appendChild(l2);
-
           egg.appendChild(d);
         });
       };
@@ -347,13 +343,11 @@
       const saveTracker = () => {
         const allData = document.querySelectorAll('#egg input');
         const t = [];
-        for (let l = 0; l < allData.length; l += 2) {
+        for (let l = 0; l < allData.length; l += 1) {
           const egg = allData[l];
-          const flag = allData[l + 1];
           t.push({
             job: egg.value,
-            egg: egg.checked,
-            flag: flag.checked,
+            egg: egg.checked
           });
         }
         localStorage.setItem('egg_track', JSON.stringify(t));
